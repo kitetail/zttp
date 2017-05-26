@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class ZttpTest extends TestCase
 {
-    private function url($url)
+    function url($url)
     {
         return vsprintf('%s/%s', [
             rtrim(getenv('TEST_SERVER_URL'), '/'),
