@@ -11,15 +11,21 @@
     ],
     "require": {
         "php": ">=7.0",
-        "guzzlehttp/guzzle": "^6.0"
+        "guzzlehttp/guzzle": "^6.0",
+        "psr/http-message": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0"
     },
     "autoload": {
-        "files": [
-            "src/Zttp.php"
-        ]
+        "psr-4": {
+            "Zttp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Zttp\\Tests\\": "tests/"
+        }
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
