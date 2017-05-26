@@ -1,6 +1,6 @@
 {
     "name": "kitetail/zttp",
-    "description": "A super simple HTTP client that seems fine.",
+    "description": "A developer-experience focused HTTP client, optimized for most common use cases.",
     "keywords": ["http", "guzzle"],
     "license": "MIT",
     "authors": [
