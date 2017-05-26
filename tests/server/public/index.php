@@ -6,21 +6,10 @@ $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
 
-function request($key = null, $default = null)
+function build_response()
 {
-    if (is_null($key)) {
-        return app('request');
-    }
+    $request = app('request');
 
-    if (is_array($key)) {
-        return app('request')->only($key);
-    }
-
-    return data_get(app('request')->all(), $key, $default);
-}
-
-function build_response($request)
-{
     return response()->json([
         'headers' => $request->header(),
         'query' => $request->query(),
@@ -30,23 +19,23 @@ function build_response($request)
 }
 
 $app->get('/get', function () {
-    return build_response(request());
+    return build_response();
 });
 
 $app->post('/post', function () {
-    return build_response(request());
+    return build_response();
 });
 
 $app->put('/put', function () {
-    return build_response(request());
+    return build_response();
 });
 
 $app->patch('/patch', function () {
-    return build_response(request());
+    return build_response();
 });
 
 $app->delete('/delete', function () {
-    return build_response(request());
+    return build_response();
 });
 
 $app->get('/redirect', function () {
