@@ -5,10 +5,15 @@ use PHPUnit\Framework\TestCase;
 
 class ZttpTest extends TestCase
 {
+    public static function setUpBeforeClass()
+    {
+        ZttpServer::start();
+    }
+
     function url($url)
     {
         return vsprintf('%s/%s', [
-            rtrim(getenv('TEST_SERVER_URL'), '/'),
+            'http://localhost:' . getenv('TEST_SERVER_PORT'),
             ltrim($url, '/'),
         ]);
     }
@@ -366,5 +371,25 @@ class ZttpTest extends TestCase
         $this->assertFalse($response->isSuccess());
         $this->assertFalse($response->isRedirect());
         $this->assertFalse($response->isClientError());
+    }
+}
+
+class ZttpServer
+{
+    static function start()
+    {
+        if (! file_exists(__DIR__ . '/server/vendor')) {
+            exec('cd "' . __DIR__ . '/server"; composer install');
+        }
+
+        $pid = exec('php -S ' . 'localhost:' . getenv('TEST_SERVER_PORT') . ' -t ./tests/server/public > /dev/null 2>&1 & echo $!');
+
+        while (@file_get_contents('http://localhost:' . getenv('TEST_SERVER_PORT') . '/get') === false) {
+            usleep(1000);
+        }
+
+        register_shutdown_function(function () use ($pid) {
+            exec('kill ' . $pid);
+        });
     }
 }

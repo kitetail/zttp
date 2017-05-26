@@ -17,6 +17,6 @@
         </testsuite>
     </testsuites>
     <php>
-        <env name="TEST_SERVER_URL" value="http://your-test-server-url.dev"/>
+        <env name="TEST_SERVER_PORT" value="9000"/>
     </php>
 </phpunit>
