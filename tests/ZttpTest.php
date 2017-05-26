@@ -5,10 +5,29 @@ use PHPUnit\Framework\TestCase;
 
 class ZttpTest extends TestCase
 {
+    static $pid;
+
+    static $server = 'localhost:9000';
+
+    public static function setUpBeforeClass()
+    {
+        if (! file_exists(__DIR__ . '/server/vendor')) {
+            exec('cd "' . __DIR__ . '/server"; composer install');
+        }
+
+        static::$pid = exec('php -S ' . static::$server . ' -t ./tests/server/public > /dev/null 2>&1 & echo $!');
+        sleep(1);
+    }
+
+    public static function tearDownAfterClass()
+    {
+        exec('kill ' . static::$pid);
+    }
+
     function url($url)
     {
         return vsprintf('%s/%s', [
-            rtrim(getenv('TEST_SERVER_URL'), '/'),
+            rtrim('http://' . static::$server, '/'),
             ltrim($url, '/'),
         ]);
     }
