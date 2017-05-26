@@ -1,5 +1,7 @@
 <?php
 
+namespace Zttp\Tests;
+
 use Zttp\Zttp;
 use PHPUnit\Framework\TestCase;
 
