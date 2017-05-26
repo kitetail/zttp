@@ -378,10 +378,6 @@ class ZttpServer
 {
     static function start()
     {
-        if (! file_exists(__DIR__ . '/server/vendor')) {
-            exec('cd "' . __DIR__ . '/server"; composer install');
-        }
-
         $pid = exec('php -S ' . 'localhost:' . getenv('TEST_SERVER_PORT') . ' -t ./tests/server/public > /dev/null 2>&1 & echo $!');
 
         while (@file_get_contents('http://localhost:' . getenv('TEST_SERVER_PORT') . '/get') === false) {
