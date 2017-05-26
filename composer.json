@@ -25,7 +25,8 @@
     "autoload-dev": {
         "psr-4": {
             "Zttp\\Tests\\": "tests/"
-        }
+        },
+        "files": ["helpers.php"]
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
