@@ -2,7 +2,7 @@
     "name": "kitetail/zttp",
     "description": "A super simple HTTP client that seems fine.",
     "keywords": ["http", "guzzle"],
-    "license": "WTF",
+    "license": "MIT",
     "authors": [
         {
             "name": "Adam Wathan",
