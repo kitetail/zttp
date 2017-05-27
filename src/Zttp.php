@@ -152,6 +152,11 @@ class ZttpResponse
         return $this->response->getStatusCode();
     }
 
+    function isOk()
+    {
+        return $this->isSuccess();
+    }
+
     function isSuccess()
     {
         return $this->status() >= 200 && $this->status() < 300;
