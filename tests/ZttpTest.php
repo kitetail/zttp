@@ -372,6 +372,18 @@ class ZttpTest extends TestCase
         $this->assertFalse($response->isRedirect());
         $this->assertFalse($response->isClientError());
     }
+
+    /** @test */
+    function is_ok_is_an_alias_for_is_success()
+    {
+        $response = Zttp::withHeaders(['Z-Status' => 200])->get($this->url('/get'));
+
+        $this->assertTrue($response->isOk());
+        $this->assertTrue($response->isSuccess());
+        $this->assertFalse($response->isRedirect());
+        $this->assertFalse($response->isClientError());
+        $this->assertFalse($response->isServerError());
+    }
 }
 
 class ZttpServer
