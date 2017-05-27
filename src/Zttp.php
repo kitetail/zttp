@@ -156,6 +156,11 @@ class ZttpResponse
     {
         return $this->status() >= 200 && $this->status() < 300;
     }
+    
+    function isOk()
+     {
+        return $this->isSuccess();
+     }
 
     function isRedirect()
     {
