@@ -16,6 +16,11 @@
             <exclude>./tests/server</exclude>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./src/</directory>
+        </whitelist>
+    </filter>
     <php>
         <env name="TEST_SERVER_PORT" value="9000"/>
     </php>

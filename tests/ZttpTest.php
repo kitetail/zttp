@@ -1,5 +1,7 @@
 <?php
 
+namespace Zttp\Tests;
+
 use Zttp\Zttp;
 use PHPUnit\Framework\TestCase;
 
@@ -335,6 +337,8 @@ class ZttpTest extends TestCase
         $response = Zttp::withHeaders(['Z-Status' => 200])->get($this->url('/get'));
 
         $this->assertTrue($response->isSuccess());
+        $this->assertTrue($response->isOk());
+
         $this->assertFalse($response->isRedirect());
         $this->assertFalse($response->isClientError());
         $this->assertFalse($response->isServerError());
@@ -346,6 +350,7 @@ class ZttpTest extends TestCase
         $response = Zttp::withHeaders(['Z-Status' => 302])->get($this->url('/get'));
 
         $this->assertTrue($response->isRedirect());
+
         $this->assertFalse($response->isSuccess());
         $this->assertFalse($response->isClientError());
         $this->assertFalse($response->isServerError());
@@ -357,6 +362,7 @@ class ZttpTest extends TestCase
         $response = Zttp::withHeaders(['Z-Status' => 404])->get($this->url('/get'));
 
         $this->assertTrue($response->isClientError());
+
         $this->assertFalse($response->isSuccess());
         $this->assertFalse($response->isRedirect());
         $this->assertFalse($response->isServerError());
@@ -368,6 +374,7 @@ class ZttpTest extends TestCase
         $response = Zttp::withHeaders(['Z-Status' => 508])->get($this->url('/get'));
 
         $this->assertTrue($response->isServerError());
+
         $this->assertFalse($response->isSuccess());
         $this->assertFalse($response->isRedirect());
         $this->assertFalse($response->isClientError());
