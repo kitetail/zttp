@@ -4,25 +4,33 @@ namespace Zttp;
 
 class Zttp
 {
+    static $client;
+
     static function __callStatic($method, $args)
     {
-        return ZttpRequest::new()->{$method}(...$args);
+        return ZttpRequest::new(static::client())->{$method}(...$args);
+    }
+
+    static function client()
+    {
+        return static::$client ?: static::$client = new \GuzzleHttp\Client;
     }
 }
 
 class ZttpRequest
 {
-    function __construct()
+    function __construct($client)
     {
+        $this->client = $client;
+        $this->bodyFormat = 'json';
         $this->options = [
             'http_errors' => false,
         ];
-        $this->bodyFormat = 'json';
     }
 
-    static function new()
+    static function new(...$args)
     {
-        return new self;
+        return new self(...$args);
     }
 
     function withoutRedirecting()
@@ -107,7 +115,7 @@ class ZttpRequest
 
     function send($method, $url, $options)
     {
-        return new ZttpResponse((new \GuzzleHttp\Client)->request($method, $url, $this->mergeOptions([
+        return new ZttpResponse($this->client->request($method, $url, $this->mergeOptions([
             'query' => $this->parseQueryParams($url),
         ], $options)));
     }
