@@ -11,7 +11,7 @@ class Zttp
         return ZttpRequest::new(static::client())->{$method}(...$args);
     }
 
-    static function client()
+    static function client(): \GuzzleHttp\Client
     {
         return static::$client ?: static::$client = new \GuzzleHttp\Client;
     }
@@ -19,7 +19,7 @@ class Zttp
 
 class ZttpRequest
 {
-    function __construct($client)
+    function __construct(\GuzzleHttp\Client $client)
     {
         $this->client = $client;
         $this->bodyFormat = 'json';
@@ -28,12 +28,12 @@ class ZttpRequest
         ];
     }
 
-    static function new(...$args)
+    static function new(...$args): ZttpRequest
     {
         return new self(...$args);
     }
 
-    function withoutRedirecting()
+    function withoutRedirecting(): ZttpRequest
     {
         return tap($this, function ($request) {
             return $this->options = array_merge_recursive($this->options, [
@@ -42,34 +42,34 @@ class ZttpRequest
         });
     }
 
-    function asJson()
+    function asJson(): ZttpRequest
     {
         return $this->bodyFormat('json')->contentType('application/json');
     }
 
-    function asFormParams()
+    function asFormParams(): ZttpRequest
     {
         return $this->bodyFormat('form_params')->contentType('application/x-www-form-urlencoded');
     }
 
-    function bodyFormat($format)
+    function bodyFormat(string $format): ZttpRequest
     {
         return tap($this, function ($request) use ($format) {
             $this->bodyFormat = $format;
         });
     }
 
-    function contentType($contentType)
+    function contentType(string $contentType): ZttpRequest
     {
         return $this->withHeaders(['Content-Type' => $contentType]);
     }
 
-    function accept($header)
+    function accept($header): ZttpRequest
     {
         return $this->withHeaders(['Accept' => $header]);
     }
 
-    function withHeaders($headers)
+    function withHeaders(array $headers): ZttpRequest
     {
         return tap($this, function ($request) use ($headers) {
             return $this->options = array_merge_recursive($this->options, [
@@ -78,54 +78,54 @@ class ZttpRequest
         });
     }
 
-    function get($url, $queryParams = [])
+    function get(string $url, array $queryParams = []): ZttpResponse
     {
         return $this->send('GET', $url, [
             'query' => $queryParams,
         ]);
     }
 
-    function post($url, $params = [])
+    function post(string $url, array $params = []): ZttpResponse
     {
         return $this->send('POST', $url, [
             $this->bodyFormat => $params,
         ]);
     }
 
-    function patch($url, $params = [])
+    function patch(string $url, array $params = []): ZttpResponse
     {
         return $this->send('PATCH', $url, [
             $this->bodyFormat => $params,
         ]);
     }
 
-    function put($url, $params = [])
+    function put(string $url, array $params = []): ZttpResponse
     {
         return $this->send('PUT', $url, [
             $this->bodyFormat => $params,
         ]);
     }
 
-    function delete($url, $params = [])
+    function delete(string $url, array $params = []): ZttpResponse
     {
         return $this->send('DELETE', $url, [
             $this->bodyFormat => $params,
         ]);
     }
 
-    function send($method, $url, $options)
+    function send(string $method, string $url, array $options): ZttpResponse
     {
         return new ZttpResponse($this->client->request($method, $url, $this->mergeOptions([
             'query' => $this->parseQueryParams($url),
         ], $options)));
     }
 
-    function mergeOptions(...$options)
+    function mergeOptions(array ...$options): array
     {
         return array_merge_recursive($this->options, ...$options);
     }
 
-    function parseQueryParams($url)
+    function parseQueryParams(string $url): array
     {
         return tap([], function (&$query) use ($url) {
             parse_str(parse_url($url, PHP_URL_QUERY), $query);
@@ -140,7 +140,7 @@ class ZttpResponse
         $this->response = $response;
     }
 
-    function body()
+    function body(): string
     {
         return (string) $this->response->getBody();
     }
@@ -160,27 +160,27 @@ class ZttpResponse
         return $this->response->getStatusCode();
     }
 
-    function isSuccess()
+    function isSuccess(): bool
     {
         return $this->status() >= 200 && $this->status() < 300;
     }
 
-    function isOk()
+    function isOk(): bool
     {
         return $this->isSuccess();
     }
 
-    function isRedirect()
+    function isRedirect(): bool
     {
         return $this->status() >= 300 && $this->status() < 400;
     }
 
-    function isClientError()
+    function isClientError(): bool
     {
         return $this->status() >= 400 && $this->status() < 500;
     }
 
-    function isServerError()
+    function isServerError(): bool
     {
         return $this->status() >= 500;
     }
@@ -191,7 +191,7 @@ class ZttpResponse
     }
 }
 
-function tap($value, $callback) {
+function tap($value, \Closure $callback) {
     $callback($value);
     return $value;
 }

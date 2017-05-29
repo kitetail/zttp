@@ -10,7 +10,7 @@ class ZttpTest extends TestCase
         ZttpServer::start();
     }
 
-    function url($url)
+    function url(string $url): string
     {
         return vsprintf('%s/%s', [
             'http://localhost:' . getenv('TEST_SERVER_PORT'),
