@@ -1,8 +1,8 @@
 # Zttp
 
-Zttp is really simple Guzzle wrapper designed to provide a really pleasant development experience for most common use cases.
+Zttp is a simple Guzzle wrapper designed to provide a really pleasant development experience for most common use cases.
 
-If you need more functionality, just use Guzzle :)
+If you need more functionality, just use [Guzzle](https://github.com/guzzle/guzzle) :)
 
 Real documentation is in the works, but for now [read the tests](https://github.com/kitetail/zttp/blob/master/tests/ZttpTest.php).
 
