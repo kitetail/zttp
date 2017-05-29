@@ -6,7 +6,7 @@ $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
 
-function build_response($request)
+function build_response(\Illuminate\Http\Request $request)
 {
     return response()->json([
         'headers' => $request->header(),
