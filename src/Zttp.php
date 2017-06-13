@@ -124,7 +124,15 @@ class ZttpRequest
     {
         return array_merge_recursive($this->options, ...$options);
     }
-
+    
+    function ignoreSSLCert(){
+         return tap($this, function ($request) {
+            return $this->options = array_merge_recursive($this->options, [
+                'verify' => false
+            ]);
+        });
+    }
+    
     function parseQueryParams($url)
     {
         return tap([], function (&$query) use ($url) {
