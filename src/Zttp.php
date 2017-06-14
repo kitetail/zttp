@@ -41,6 +41,14 @@ class ZttpRequest
             ]);
         });
     }
+    
+    function withoutVerifying(){
+         return tap($this, function ($request) {
+            return $this->options = array_merge_recursive($this->options, [
+                'verify' => false
+            ]);
+        });
+    }
 
     function asJson()
     {
@@ -123,14 +131,6 @@ class ZttpRequest
     function mergeOptions(...$options)
     {
         return array_merge_recursive($this->options, ...$options);
-    }
-    
-    function ignoreSSLCert(){
-         return tap($this, function ($request) {
-            return $this->options = array_merge_recursive($this->options, [
-                'verify' => false
-            ]);
-        });
     }
     
     function parseQueryParams($url)
