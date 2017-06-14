@@ -41,6 +41,14 @@ class ZttpRequest
             ]);
         });
     }
+    
+    function withoutVerifying(){
+         return tap($this, function ($request) {
+            return $this->options = array_merge_recursive($this->options, [
+                'verify' => false
+            ]);
+        });
+    }
 
     function asJson()
     {
