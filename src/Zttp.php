@@ -132,7 +132,7 @@ class ZttpRequest
     {
         return array_merge_recursive($this->options, ...$options);
     }
-    
+
     function parseQueryParams($url)
     {
         return tap([], function (&$query) use ($url) {
