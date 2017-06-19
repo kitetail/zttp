@@ -2,6 +2,8 @@
 
 namespace Zttp;
 
+use GuzzleHttp\Client;
+
 class Zttp
 {
     static $client;
@@ -13,13 +15,13 @@ class Zttp
 
     static function client()
     {
-        return static::$client ?: static::$client = new \GuzzleHttp\Client;
+        return static::$client ?: static::$client = new Client;
     }
 }
 
 class ZttpRequest
 {
-    function __construct($client)
+    function __construct(Client $client)
     {
         $this->client = $client;
         $this->bodyFormat = 'json';
