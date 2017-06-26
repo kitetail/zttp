@@ -37,7 +37,7 @@ class ZttpRequest
     {
         return tap($this, function ($request) {
             return $this->options = array_merge_recursive($this->options, [
-                'allow_redirects' => false
+                'allow_redirects' => false,
             ]);
         });
     }
@@ -46,7 +46,7 @@ class ZttpRequest
     {
         return tap($this, function ($request) {
             return $this->options = array_merge_recursive($this->options, [
-                'verify' => false
+                'verify' => false,
             ]);
         });
     }
@@ -82,7 +82,7 @@ class ZttpRequest
     {
         return tap($this, function ($request) use ($headers) {
             return $this->options = array_merge_recursive($this->options, [
-                'headers' => $headers
+                'headers' => $headers,
             ]);
         });
     }
