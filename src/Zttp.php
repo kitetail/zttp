@@ -141,11 +141,11 @@ class ZttpRequest
         }, []);
     }
 
-    function __invoke($callback, $default = null)
+    function __invoke($callback, $value = null)
     {
-        $value = $default ?? $this;
-        $callback($value);
-        return $value;
+        return (function () use ($callback, &$value) {
+            return $callback($value) ? $value : $value;
+        })($value = $value ?? $this);
     }
 }
 
