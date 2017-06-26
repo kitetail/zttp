@@ -35,8 +35,8 @@ class ZttpRequest
 
     function withoutRedirecting()
     {
-        return tap($this, function ($request) {
-            return $this->options = array_merge_recursive($this->options, [
+        return $this(function ($request) {
+            $this->options = array_merge_recursive($this->options, [
                 'allow_redirects' => false,
             ]);
         });
@@ -44,8 +44,8 @@ class ZttpRequest
     
     function withoutVerifying()
     {
-        return tap($this, function ($request) {
-            return $this->options = array_merge_recursive($this->options, [
+        return $this(function ($request) {
+            $this->options = array_merge_recursive($this->options, [
                 'verify' => false,
             ]);
         });
@@ -63,7 +63,7 @@ class ZttpRequest
 
     function bodyFormat($format)
     {
-        return tap($this, function ($request) use ($format) {
+        return $this(function ($request) use ($format) {
             $this->bodyFormat = $format;
         });
     }
@@ -80,8 +80,8 @@ class ZttpRequest
 
     function withHeaders($headers)
     {
-        return tap($this, function ($request) use ($headers) {
-            return $this->options = array_merge_recursive($this->options, [
+        return $this(function ($request) use ($headers) {
+            $this->options = array_merge_recursive($this->options, [
                 'headers' => $headers,
             ]);
         });
@@ -136,9 +136,16 @@ class ZttpRequest
 
     function parseQueryParams($url)
     {
-        return tap([], function (&$query) use ($url) {
+        return $this(function (&$query) use ($url) {
             parse_str(parse_url($url, PHP_URL_QUERY), $query);
-        });
+        }, []);
+    }
+
+    function __invoke($callback, $default = null)
+    {
+        $value = $default ?? $this;
+        $callback($value);
+        return $value;
     }
 }
 
@@ -198,9 +205,4 @@ class ZttpResponse
     {
         return $this->response->{$method}(...$args);
     }
-}
-
-function tap($value, $callback) {
-    $callback($value);
-    return $value;
 }
