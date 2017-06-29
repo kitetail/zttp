@@ -124,17 +124,37 @@ class ZttpRequest
 
     function send($method, $url, $options)
     {
-        return new ZttpResponse((new \GuzzleHttp\Client(['handler' => tap(\GuzzleHttp\HandlerStack::create(), function ($stack) {
-            $stack->push(function ($handler) {
-                return function ($request, $options) use ($handler) {
-                    return $handler(tap($request, function ($request) {
-                        ($this->beforeSendingCallback)(new PendingZttpRequest($request));
-                    }), $options);
-                };
-            });
-        })]))->request($method, $url, $this->mergeOptions([
+        return new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions([
             'query' => $this->parseQueryParams($url),
         ], $options)));
+    }
+
+    function buildClient()
+    {
+        return new \GuzzleHttp\Client(['handler' => $this->buildHandlerStack()]);
+    }
+
+    function buildHandlerStack()
+    {
+        return tap(\GuzzleHttp\HandlerStack::create(), function ($stack) {
+            $stack->push($this->buildBeforeSendingHandler());
+        });
+    }
+
+    function buildBeforeSendingHandler()
+    {
+        return function ($handler) {
+            return function ($request, $options) use ($handler) {
+                return $handler($this->runBeforeSendingCallback($request), $options);
+            };
+        };
+    }
+
+    function runBeforeSendingCallback($request)
+    {
+        return tap($request, function ($request) {
+            ($this->beforeSendingCallback)(new PendingZttpRequest($request));
+        });
     }
 
     function mergeOptions(...$options)
