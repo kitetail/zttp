@@ -4,24 +4,17 @@ namespace Zttp;
 
 class Zttp
 {
-    static $client;
-
     static function __callStatic($method, $args)
     {
-        return ZttpRequest::new(static::client())->{$method}(...$args);
-    }
-
-    static function client()
-    {
-        return static::$client ?: static::$client = new \GuzzleHttp\Client;
+        return ZttpRequest::new()->{$method}(...$args);
     }
 }
 
 class ZttpRequest
 {
-    function __construct($client)
+    function __construct()
     {
-        $this->client = $client;
+        $this->beforeSendingCallback = function () {};
         $this->bodyFormat = 'json';
         $this->options = [
             'http_errors' => false,
@@ -41,7 +34,7 @@ class ZttpRequest
             ]);
         });
     }
-    
+
     function withoutVerifying()
     {
         return tap($this, function ($request) {
@@ -87,6 +80,13 @@ class ZttpRequest
         });
     }
 
+    function beforeSending($callback)
+    {
+        $this->beforeSendingCallback = $callback;
+
+        return $this;
+    }
+
     function get($url, $queryParams = [])
     {
         return $this->send('GET', $url, [
@@ -124,9 +124,22 @@ class ZttpRequest
 
     function send($method, $url, $options)
     {
-        return new ZttpResponse($this->client->request($method, $url, $this->mergeOptions([
+        $stack = \GuzzleHttp\HandlerStack::create();
+
+        $stack->push(function ($handler) {
+            return function ($request, $options) use ($handler) {
+                ($this->beforeSendingCallback)(new PendingZttpRequest($request));
+                return $handler($request, $options);
+            };
+        });
+
+        $client = new \GuzzleHttp\Client(['handler' => $stack]);
+
+        $guzzleResponse = $client->request($method, $url, $this->mergeOptions([
             'query' => $this->parseQueryParams($url),
-        ], $options)));
+        ], $options));
+
+        return new ZttpResponse($guzzleResponse);
     }
 
     function mergeOptions(...$options)
@@ -139,6 +152,32 @@ class ZttpRequest
         return tap([], function (&$query) use ($url) {
             parse_str(parse_url($url, PHP_URL_QUERY), $query);
         });
+    }
+}
+
+class PendingZttpRequest
+{
+    function __construct($guzzleRequest)
+    {
+        $this->request = $guzzleRequest;
+    }
+
+    function body()
+    {
+        return (string) $this->request->getBody();
+    }
+
+    function headers()
+    {
+        $pairs = array_map(function ($values, $key) {
+            return [$key, $values[0]];
+        }, $this->request->getHeaders(), array_keys($this->request->getHeaders()));
+
+        return array_reduce($pairs, function ($headers, $pair) {
+            return array_merge($headers, [
+                $pair[0] => $pair[1],
+            ]);
+        }, []);
     }
 }
 
