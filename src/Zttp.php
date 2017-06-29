@@ -127,8 +127,9 @@ class ZttpRequest
         return new ZttpResponse((new \GuzzleHttp\Client(['handler' => tap(\GuzzleHttp\HandlerStack::create(), function ($stack) {
             $stack->push(function ($handler) {
                 return function ($request, $options) use ($handler) {
-                    ($this->beforeSendingCallback)(new PendingZttpRequest($request));
-                    return $handler($request, $options);
+                    return $handler(tap($request, function ($request) {
+                        ($this->beforeSendingCallback)(new PendingZttpRequest($request));
+                    }), $options);
                 };
             });
         })]))->request($method, $url, $this->mergeOptions([
