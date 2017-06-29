@@ -124,22 +124,16 @@ class ZttpRequest
 
     function send($method, $url, $options)
     {
-        $stack = \GuzzleHttp\HandlerStack::create();
-
-        $stack->push(function ($handler) {
-            return function ($request, $options) use ($handler) {
-                ($this->beforeSendingCallback)(new PendingZttpRequest($request));
-                return $handler($request, $options);
-            };
-        });
-
-        $client = new \GuzzleHttp\Client(['handler' => $stack]);
-
-        $guzzleResponse = $client->request($method, $url, $this->mergeOptions([
+        return new ZttpResponse((new \GuzzleHttp\Client(['handler' => tap(\GuzzleHttp\HandlerStack::create(), function ($stack) {
+            $stack->push(function ($handler) {
+                return function ($request, $options) use ($handler) {
+                    ($this->beforeSendingCallback)(new PendingZttpRequest($request));
+                    return $handler($request, $options);
+                };
+            });
+        })]))->request($method, $url, $this->mergeOptions([
             'query' => $this->parseQueryParams($url),
-        ], $options));
-
-        return new ZttpResponse($guzzleResponse);
+        ], $options)));
     }
 
     function mergeOptions(...$options)
@@ -169,11 +163,9 @@ class PendingZttpRequest
 
     function headers()
     {
-        $pairs = array_map(function ($values, $key) {
+        return array_reduce(array_map(function ($values, $key) {
             return [$key, $values[0]];
-        }, $this->request->getHeaders(), array_keys($this->request->getHeaders()));
-
-        return array_reduce($pairs, function ($headers, $pair) {
+        }, $this->request->getHeaders(), array_keys($this->request->getHeaders())), function ($headers, $pair) {
             return array_merge($headers, [
                 $pair[0] => $pair[1],
             ]);
