@@ -184,13 +184,9 @@ class PendingZttpRequest
 
     function headers()
     {
-        return array_reduce(array_map(function ($values, $key) {
-            return [$key, $values[0]];
-        }, $this->request->getHeaders(), array_keys($this->request->getHeaders())), function ($headers, $pair) {
-            return array_merge($headers, [
-                $pair[0] => $pair[1],
-            ]);
-        }, []);
+        return collect($this->request->getHeaders())->mapWithKeys(function ($values, $header) {
+            return [$header => $values[0]];
+        })->all();
     }
 }
 
