@@ -6,11 +6,11 @@ class Zttp
 {
     static function __callStatic($method, $args)
     {
-        return ZttpRequest::new()->{$method}(...$args);
+        return PendingZttpRequest::new()->{$method}(...$args);
     }
 }
 
-class ZttpRequest
+class PendingZttpRequest
 {
     function __construct()
     {
@@ -153,7 +153,7 @@ class ZttpRequest
     function runBeforeSendingCallback($request)
     {
         return tap($request, function ($request) {
-            ($this->beforeSendingCallback)(new PendingZttpRequest($request));
+            ($this->beforeSendingCallback)(new ZttpRequest($request));
         });
     }
 
@@ -170,11 +170,21 @@ class ZttpRequest
     }
 }
 
-class PendingZttpRequest
+class ZttpRequest
 {
-    function __construct($guzzleRequest)
+    function __construct($request)
     {
-        $this->request = $guzzleRequest;
+        $this->request = $request;
+    }
+
+    function url()
+    {
+        return (string) $this->request->getUri();
+    }
+
+    function method()
+    {
+        return $this->request->getMethod();
     }
 
     function body()
