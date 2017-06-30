@@ -327,6 +327,7 @@ class ZttpTest extends TestCase
         $response = Zttp::get($this->url('/get'));
 
         $this->assertEquals('application/json', $response->header('Content-Type'));
+        $this->assertEquals('application/json', $response->headers()['Content-Type']);
     }
 
     /** @test */

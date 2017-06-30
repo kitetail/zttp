@@ -212,6 +212,13 @@ class ZttpResponse
         return $this->response->getHeaderLine($header);
     }
 
+    function headers()
+    {
+        return collect($this->response->getHeaders())->mapWithKeys(function ($v, $k) {
+            return [$k => $v[0]];
+        })->all();
+    }
+
     function status()
     {
         return $this->response->getStatusCode();
