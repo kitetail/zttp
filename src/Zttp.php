@@ -14,7 +14,7 @@ class PendingZttpRequest
 {
     function __construct()
     {
-        $this->beforeSendingCallbacks = [];
+        $this->beforeSendingCallbacks = collect();
         $this->bodyFormat = 'json';
         $this->options = [
             'http_errors' => false,
@@ -152,13 +152,7 @@ class PendingZttpRequest
     function runBeforeSendingCallbacks($request)
     {
         return tap($request, function ($request) {
-            array_reduce(
-                $this->beforeSendingCallbacks,
-                function ($request, $callback) {
-                    return $callback($request);
-                },
-                new ZttpRequest($request)
-            );
+            $this->beforeSendingCallbacks->each->__invoke(new ZttpRequest($request));
         });
     }
 
