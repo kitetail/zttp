@@ -387,15 +387,20 @@ class ZttpTest extends TestCase
     }
 
     /** @test */
-    function a_callback_can_be_run_before_sending_the_request()
+    function multiple_callbacks_can_be_run_before_sending_the_request()
     {
         $state = [];
 
         $response = Zttp::beforeSending(function ($request) use (&$state) {
-            $state['url'] = $request->url();
-            $state['method'] = $request->method();
-            $state['headers'] = $request->headers();
-            $state['body'] = $request->body();
+            return tap($request, function ($request) use (&$state) {
+                $state['url'] = $request->url();
+                $state['method'] = $request->method();
+            });
+        })->beforeSending(function ($request) use (&$state) {
+            return tap($request, function ($request) use (&$state) {
+                $state['headers'] = $request->headers();
+                $state['body'] = $request->body();
+            });
         })->withHeaders(['Z-Status' => 200])->post($this->url('/post'), ['foo' => 'bar']);
 
         $this->assertEquals($this->url('/post'), $state['url']);

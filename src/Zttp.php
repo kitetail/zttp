@@ -14,7 +14,7 @@ class PendingZttpRequest
 {
     function __construct()
     {
-        $this->beforeSendingCallback = function () {};
+        $this->beforeSendingCallbacks = [];
         $this->bodyFormat = 'json';
         $this->options = [
             'http_errors' => false,
@@ -82,9 +82,9 @@ class PendingZttpRequest
 
     function beforeSending($callback)
     {
-        $this->beforeSendingCallback = $callback;
-
-        return $this;
+        return tap($this, function () use ($callback) {
+            $this->beforeSendingCallbacks[] = $callback;
+        });
     }
 
     function get($url, $queryParams = [])
@@ -140,20 +140,25 @@ class PendingZttpRequest
             $stack->push($this->buildBeforeSendingHandler());
         });
     }
-
     function buildBeforeSendingHandler()
     {
         return function ($handler) {
             return function ($request, $options) use ($handler) {
-                return $handler($this->runBeforeSendingCallback($request), $options);
+                return $handler($this->runBeforeSendingCallbacks($request), $options);
             };
         };
     }
 
-    function runBeforeSendingCallback($request)
+    function runBeforeSendingCallbacks($request)
     {
         return tap($request, function ($request) {
-            ($this->beforeSendingCallback)(new ZttpRequest($request));
+            array_reduce(
+                $this->beforeSendingCallbacks,
+                function ($request, $callback) {
+                    return $callback($request);
+                },
+                new ZttpRequest($request)
+            );
         });
     }
 
