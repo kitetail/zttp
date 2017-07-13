@@ -80,6 +80,15 @@ class PendingZttpRequest
         });
     }
 
+    public function withAuth(array $credentials)
+    {
+        return tap($this, function ($request) use ($credentials) {
+            return $this->options = array_merge_recursive($this->options, [
+                'auth' => $credentials,
+            ]);
+        });
+    }
+
     function beforeSending($callback)
     {
         return tap($this, function () use ($callback) {
