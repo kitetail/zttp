@@ -56,7 +56,7 @@ class PendingZttpRequest
 
     public function asMultipart()
     {
-        return $this->bodyFormat('multipart')->contentType('multipart/form-data');
+        return $this->bodyFormat('multipart')->contentType("multipart/form-data; boundary=".md5(uniqid(null, true)));
     }
 
     function bodyFormat($format)
