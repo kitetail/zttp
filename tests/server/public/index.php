@@ -48,4 +48,8 @@ $app->get('/simple-response', function () {
     return "A simple string response";
 });
 
+$app->get('/xml-response', function () {
+    return "<?xml version='1.0' encoding='UTF-8'?><zttp><author>Adam Wathan</author></zttp>";
+});
+
 $app->run();
