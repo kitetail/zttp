@@ -216,7 +216,7 @@ class ZttpResponse
         return json_decode($this->response->getBody(), true);
     }
 
-    public function xml()
+    function xml()
     {
         return simplexml_load_string(
             utf8_encode($this->response->getBody()),
