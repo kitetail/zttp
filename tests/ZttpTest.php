@@ -322,6 +322,14 @@ class ZttpTest extends TestCase
     }
 
     /** @test */
+    function can_retrieve_the_xml_response_body()
+    {
+        $response = Zttp::get($this->url('/xml-response'));
+
+        $this->assertEquals("Adam Wathan", $response->xml()->author);
+    }
+
+    /** @test */
     function can_retrieve_response_header_values()
     {
         $response = Zttp::get($this->url('/get'));
