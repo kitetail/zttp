@@ -54,6 +54,11 @@ class PendingZttpRequest
         return $this->bodyFormat('form_params')->contentType('application/x-www-form-urlencoded');
     }
 
+    public function asMultipart()
+    {
+        return $this->bodyFormat('multipart')->contentType('multipart/form-data');
+    }
+
     function bodyFormat($format)
     {
         return tap($this, function ($request) use ($format) {
