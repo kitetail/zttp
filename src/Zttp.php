@@ -80,7 +80,7 @@ class PendingZttpRequest
         });
     }
 
-    public function withBasicAuth($username, $password)
+    function withBasicAuth($username, $password)
     {
         return tap($this, function ($request) use ($username, $password) {
             return $this->options = array_merge_recursive($this->options, [
@@ -89,7 +89,7 @@ class PendingZttpRequest
         });
     }
 
-    public function withDigestAuth($username, $password)
+    function withDigestAuth($username, $password)
     {
         return tap($this, function ($request) use ($username, $password) {
             return $this->options = array_merge_recursive($this->options, [
