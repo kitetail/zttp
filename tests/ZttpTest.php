@@ -325,7 +325,8 @@ class ZttpTest extends TestCase
     function can_retrieve_the_xml_response_body()
     {
         $response = Zttp::get($this->url('/xml-response'));
-
+        
+        $this->assertInstanceOf(SimpleXMLElement::class, $response->xml());
         $this->assertEquals("Adam Wathan", $response->xml()->author);
     }
 
