@@ -1,6 +1,7 @@
 <?php
 
 use Zttp\Zttp;
+use Zttp\ZttpResponse;
 use PHPUnit\Framework\TestCase;
 
 class ZttpTest extends TestCase
@@ -408,6 +409,29 @@ class ZttpTest extends TestCase
         $this->assertArrayHasKey('User-Agent', $state['headers']);
         $this->assertEquals(200, $state['headers']['Z-Status']);
         $this->assertEquals(json_encode(['foo' => 'bar']), $state['body']);
+    }
+
+        /** @test */
+    function response_can_use_macros()
+    {
+        ZttpResponse::macro('testMacro', function () {
+            return $this->json();
+        });
+
+        $response = Zttp::post($this->url('/post'), [
+            'foo' => 'bar',
+            'baz' => 'qux',
+        ]);
+
+        $this->assertArraySubset([
+            'headers' => [
+                'content-type' => ['application/json'],
+            ],
+            'json' => [
+                'foo' => 'bar',
+                'baz' => 'qux',
+            ]
+        ], $response->testMacro());
     }
 }
 
