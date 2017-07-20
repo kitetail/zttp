@@ -201,6 +201,10 @@ class ZttpRequest
 
 class ZttpResponse
 {
+    use \Illuminate\Support\Traits\Macroable {
+        __call as macroCall;
+    }
+
     function __construct($response)
     {
         $this->response = $response;
@@ -260,6 +264,10 @@ class ZttpResponse
 
     function __call($method, $args)
     {
+        if (static::hasMacro($method)) {
+            return $this->macroCall($method, $args);
+        }
+
         return $this->response->{$method}(...$args);
     }
 }
