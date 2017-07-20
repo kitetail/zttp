@@ -411,11 +411,14 @@ class ZttpTest extends TestCase
         $this->assertEquals(json_encode(['foo' => 'bar']), $state['body']);
     }
 
-        /** @test */
+    /** @test */
     function response_can_use_macros()
     {
         ZttpResponse::macro('testMacro', function () {
-            return $this->json();
+            return vsprintf('%s %s', [
+                $this->json()['json']['foo'],
+                $this->json()['json']['baz'],
+            ]);
         });
 
         $response = Zttp::post($this->url('/post'), [
@@ -423,15 +426,7 @@ class ZttpTest extends TestCase
             'baz' => 'qux',
         ]);
 
-        $this->assertArraySubset([
-            'headers' => [
-                'content-type' => ['application/json'],
-            ],
-            'json' => [
-                'foo' => 'bar',
-                'baz' => 'qux',
-            ]
-        ], $response->testMacro());
+        $this->assertEquals('bar qux', $response->testMacro());
     }
 }
 
