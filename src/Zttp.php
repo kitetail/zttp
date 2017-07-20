@@ -220,6 +220,14 @@ class ZttpResponse
         return json_decode($this->response->getBody(), true);
     }
 
+    function xml()
+    {
+        return simplexml_load_string(
+            utf8_encode($this->response->getBody()),
+            'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS
+        );
+    }
+
     function header($header)
     {
         return $this->response->getHeaderLine($header);
