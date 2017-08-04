@@ -104,16 +104,27 @@ class ZttpTest extends TestCase
     /** @test */
     function post_content_can_be_sent_as_multipart()
     {
-        $response = Zttp::asMultipart()->post($this->url('/post'), [
+        $response = Zttp::asMultipart()->post($this->url('/multi-part'), [
             [
-                'name'     => 'foo',
-                'contents' => 'data',
-                'headers'  => ['Z-Baz' => 'bar']
+                'name' => 'foo',
+                'contents' => 'bar'
             ],
-        ]);
+            [
+                'name' => 'baz',
+                'contents' => 'qux',
+            ],
+            [
+                'name' => 'test-file',
+                'contents' => 'test contents',
+                'filename' => 'test-file.txt',
+            ],
+        ])->json();
 
-        $this->assertTrue($response->isOk());
-        $this->assertStringStartsWith('multipart', $response->json()['headers']['content-type'][0]);
+        $this->assertEquals(['foo' => 'bar', 'baz' => 'qux'], $response['body_content']);
+        $this->assertTrue($response['has_file']);
+        $this->assertEquals($response['file_content'], 'test contents');
+        $this->assertStringStartsWith('multipart', $response['headers']['content-type'][0]);
+
     }
 
     /** @test */
