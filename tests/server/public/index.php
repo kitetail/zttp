@@ -63,14 +63,14 @@ $app->get('/digest-auth', function () {
 
     $authorization = app('request')->server->get('PHP_AUTH_DIGEST');
     if (!$authorization) {
-        return response(null,401)
+        return response(null, 401)
             ->header('WWW-Authenticate', 'Digest realm="' . $realm . '",qop="auth",nonce="' . uniqid() . '",opaque="' . md5($realm) . '"');
     }
 
     $data = ['nonce' => null, 'nc' => null, 'cnonce' => null, 'qop' => null, 'username' => null, 'uri' => null, 'response' => null];
     foreach (array_keys($data) as $key) {
         if (!preg_match("@$key=(?:\"(.*)\"|'(.*)'|(.*),)@U", $authorization, $matches)) {
-            return response(null,401);
+            return response(null, 401);
         }
         $data[$key] = array_values(array_filter($matches))[1];
     }
@@ -84,7 +84,7 @@ $app->get('/digest-auth', function () {
     $validResponse = md5($a . ':' . $data['nonce'] . ':' . $data['nc'] . ':'.$data['cnonce'] . ':' . $data['qop'] . ':' . $b);
 
     if ($data['response'] != $validResponse) {
-        return response(null,401);
+        return response(null, 401);
     }
 
     return response(200);
@@ -92,11 +92,11 @@ $app->get('/digest-auth', function () {
 
 $app->post('/multi-part', function () {
     return response()->json([
-                                'body_content' => app('request')->only(['foo', 'baz']),
-                                'has_file' => app('request')->hasFile('test-file'),
-                                'file_content' => file_get_contents($_FILES['test-file']['tmp_name']),
-                                'headers' => app('request')->header(),
-                            ], 200);
+        'body_content' => app('request')->only(['foo', 'baz']),
+        'has_file' => app('request')->hasFile('test-file'),
+        'file_content' => file_get_contents($_FILES['test-file']['tmp_name']),
+        'headers' => app('request')->header(),
+    ], 200);
 });
 
 $app->run();
