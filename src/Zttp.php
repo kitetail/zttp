@@ -116,7 +116,7 @@ class PendingZttpRequest
 
     static function getCookieJar()
     {
-        return static::$cookieJar ? : static::$cookieJar = new \GuzzleHttp\Cookie\CookieJar();
+        return static::$cookieJar ?: static::$cookieJar = new \GuzzleHttp\Cookie\CookieJar();
     }
 
     function beforeSending($callback)
