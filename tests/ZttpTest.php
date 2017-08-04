@@ -462,6 +462,18 @@ class ZttpTest extends TestCase
 
        $this->assertTrue($response->isOk());
     }
+
+    /** @test */
+    function cookies_can_be_shared_between_requests()
+    {
+        $response = Zttp::withCookies()->get($this->url('/echo-cookie'));
+        $this->assertEmpty($response->body());
+        Zttp::withCookies()->get($this->url('/set-cookie'));
+        $response = Zttp::withCookies()->get($this->url('/echo-cookie'));
+        $this->assertEquals('bar', $response->body());
+        $response = Zttp::get($this->url('/echo-cookie'));
+        $this->assertEmpty($response->body());
+    }
 }
 
 class ZttpServer

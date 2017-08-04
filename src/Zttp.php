@@ -103,6 +103,22 @@ class PendingZttpRequest
         });
     }
 
+    static $cookieJar;
+
+    function withCookies()
+    {
+        return tap($this, function($request) {
+            return $this->options = array_merge_recursive($this->options, [
+                'cookies' => static::getCookieJar(),
+            ]);
+        });
+    }
+
+    static function getCookieJar()
+    {
+        return static::$cookieJar ? : static::$cookieJar = new \GuzzleHttp\Cookie\CookieJar();
+    }
+
     function beforeSending($callback)
     {
         return tap($this, function () use ($callback) {
