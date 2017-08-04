@@ -102,6 +102,20 @@ class ZttpTest extends TestCase
     }
 
     /** @test */
+    function post_content_can_be_sent_as_multipart()
+    {
+        $response = Zttp::asMultipart()->post($this->url('/post'), [
+            [
+                'name'     => 'foo',
+                'contents' => 'data',
+                'headers'  => ['Z-Baz' => 'bar']
+            ],
+        ]);
+
+        $this->assertTrue($response->isOk());
+    }
+
+    /** @test */
     function post_content_can_be_sent_as_json_explicitly()
     {
         $response = Zttp::asJson()->post($this->url('/post'), [
