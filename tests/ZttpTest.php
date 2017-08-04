@@ -113,6 +113,7 @@ class ZttpTest extends TestCase
         ]);
 
         $this->assertTrue($response->isOk());
+        $this->assertStringStartsWith('multipart', $response->json()['headers']['content-type'][0]);
     }
 
     /** @test */
