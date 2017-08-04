@@ -48,4 +48,14 @@ $app->get('/simple-response', function () {
     return "A simple string response";
 });
 
+$app->get('/basic-auth', function () {
+    $headers = [
+        (bool) preg_match('/Basic\s[a-zA-Z0-9]+/', app('request')->header('Authorization')),
+        app('request')->header('php-auth-user') === 'zttp',
+        app('request')->header('php-auth-pw') === 'secret'
+    ];
+
+    return (count(array_unique($headers)) === 1) ? response(null, 200) : response(null, 401);
+});
+
 $app->run();

@@ -442,6 +442,14 @@ class ZttpTest extends TestCase
 
         $this->assertEquals('bar qux', $response->testMacro());
     }
+
+    /** @test */
+    function can_use_basic_auth()
+    {
+       $response = Zttp::withBasicAuth('zttp', 'secret')->get($this->url('/basic-auth'));
+
+       $this->assertTrue($response->isOk());
+    }
 }
 
 class ZttpServer
