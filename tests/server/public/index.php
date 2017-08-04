@@ -90,4 +90,13 @@ $app->get('/digest-auth', function () {
     return response(200);
 });
 
+$app->post('/multi-part', function () {
+    return response()->json([
+                                'body_content' => app('request')->only(['foo', 'baz']),
+                                'has_file' => app('request')->hasFile('test-file'),
+                                'file_content' => file_get_contents($_FILES['test-file']['tmp_name']),
+                                'headers' => app('request')->header(),
+                            ], 200);
+});
+
 $app->run();
