@@ -68,8 +68,9 @@ $app->post('/multi-part', function () {
 });
 
 $app->get('/set-cookie', function() {
-   return response(null, 200)
-            ->withCookie(new \Symfony\Component\HttpFoundation\Cookie('foo', 'bar'));
+   return response(null, 200)->withCookie(
+       new \Symfony\Component\HttpFoundation\Cookie('foo', 'bar')
+   );
 });
 
 $app->get('/echo-cookie', function() {
