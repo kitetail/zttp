@@ -80,6 +80,24 @@ class PendingZttpRequest
         });
     }
 
+    function withBasicAuth($username, $password)
+    {
+        return tap($this, function ($request) use ($username, $password) {
+            return $this->options = array_merge_recursive($this->options, [
+                'auth' => [$username, $password],
+            ]);
+        });
+    }
+
+    function withDigestAuth($username, $password)
+    {
+        return tap($this, function ($request) use ($username, $password) {
+            return $this->options = array_merge_recursive($this->options, [
+                'auth' => [$username, $password, 'digest'],
+            ]);
+        });
+    }
+
     function beforeSending($callback)
     {
         return tap($this, function () use ($callback) {
