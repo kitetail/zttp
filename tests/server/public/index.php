@@ -63,8 +63,10 @@ $app->get('/digest-auth', function () {
 
     $authorization = app('request')->server->get('PHP_AUTH_DIGEST');
     if (!$authorization) {
-        return response(null, 401)
-            ->header('WWW-Authenticate', 'Digest realm="' . $realm . '",qop="auth",nonce="' . uniqid() . '",opaque="' . md5($realm) . '"');
+        return response(null, 401)->header(
+            'WWW-Authenticate',
+            'Digest realm="' . $realm . '",qop="auth",nonce="' . uniqid() . '",opaque="' . md5($realm) . '"'
+        );
     }
 
     $data = ['nonce' => null, 'nc' => null, 'cnonce' => null, 'qop' => null, 'username' => null, 'uri' => null, 'response' => null];
