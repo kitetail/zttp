@@ -462,6 +462,15 @@ class ZttpTest extends TestCase
 
        $this->assertTrue($response->isOk());
     }
+
+    /**
+     * @test
+     * @expectedException \GuzzleHttp\Exception\ConnectException
+     */
+    function client_will_force_timeout()
+    {
+        Zttp::timeout(1)->get($this->url('/timeout'));
+    }
 }
 
 class ZttpServer
