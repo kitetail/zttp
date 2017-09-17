@@ -154,9 +154,13 @@ class PendingZttpRequest
 
     function send($method, $url, $options)
     {
-        return new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions([
-            'query' => $this->parseQueryParams($url),
-        ], $options)));
+        try {
+            return new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions([
+                'query' => $this->parseQueryParams($url),
+            ], $options)));
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+            throw new ZttpConnectException($e->getMessage(), 0, $e);
+        }
     }
 
     function buildClient()
@@ -301,6 +305,8 @@ class ZttpResponse
         return $this->response->{$method}(...$args);
     }
 }
+
+class ZttpConnectException extends \Exception {}
 
 function tap($value, $callback) {
     $callback($value);
