@@ -159,7 +159,7 @@ class PendingZttpRequest
                 'query' => $this->parseQueryParams($url),
             ], $options)));
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
-            throw new ZttpConnectException($e->getMessage(), 0, $e);
+            throw new ConnectionException($e->getMessage(), 0, $e);
         }
     }
 
@@ -306,7 +306,7 @@ class ZttpResponse
     }
 }
 
-class ZttpConnectException extends \Exception {}
+class ConnectionException extends \Exception {}
 
 function tap($value, $callback) {
     $callback($value);
