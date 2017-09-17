@@ -285,6 +285,11 @@ class ZttpResponse
         return $this->status() >= 500;
     }
 
+    function __toString()
+    {
+        return $this->body();
+    }
+    
     function __call($method, $args)
     {
         if (static::hasMacro($method)) {
