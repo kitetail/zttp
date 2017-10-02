@@ -105,9 +105,9 @@ class PendingZttpRequest
 
     function timeout($seconds)
     {
-        $this->options['timeout'] = $seconds;
-
-        return $this;
+        return tap($this, function () use ($seconds) {
+            $this->options['timeout'] = $seconds;
+        });
     }
 
     function beforeSending($callback)
