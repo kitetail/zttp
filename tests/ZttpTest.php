@@ -465,7 +465,7 @@ class ZttpTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Zttp\ZttpConnectException
+     * @expectedException \Zttp\ConnectionException
      */
     function client_will_force_timeout()
     {
