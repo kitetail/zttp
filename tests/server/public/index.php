@@ -48,6 +48,10 @@ $app->get('/simple-response', function () {
     return "A simple string response";
 });
 
+$app->get('/timeout', function () {
+    sleep(2);
+});
+
 $app->get('/basic-auth', function () {
     $headers = [
         (bool) preg_match('/Basic\s[a-zA-Z0-9]+/', app('request')->header('Authorization')),
