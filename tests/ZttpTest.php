@@ -463,6 +463,14 @@ class ZttpTest extends TestCase
        $this->assertTrue($response->isOk());
     }
 
+    /** @test */
+    function can_use_digest_auth()
+    {
+        $response = Zttp::withDigestAuth('zttp', 'secret')->get($this->url('/digest-auth'));
+
+        $this->assertTrue($response->isOk());
+    }
+
     /**
      * @test
      * @expectedException \Zttp\ConnectionException

@@ -62,6 +62,40 @@ $app->get('/basic-auth', function () {
     return (count(array_unique($headers)) === 1) ? response(null, 200) : response(null, 401);
 });
 
+$app->get('/digest-auth', function () {
+    $realm = 'Restricted area';
+
+    $authorization = app('request')->server->get('PHP_AUTH_DIGEST');
+    if (!$authorization) {
+        return response(null, 401)->header(
+            'WWW-Authenticate',
+            'Digest realm="' . $realm . '",qop="auth",nonce="' . uniqid() . '",opaque="' . md5($realm) . '"'
+        );
+    }
+
+    $data = ['nonce' => null, 'nc' => null, 'cnonce' => null, 'qop' => null, 'username' => null, 'uri' => null, 'response' => null];
+    foreach (array_keys($data) as $key) {
+        if (!preg_match("@$key=(?:\"(.*)\"|'(.*)'|(.*),)@U", $authorization, $matches)) {
+            return response(null, 401);
+        }
+        $data[$key] = array_values(array_filter($matches))[1];
+    }
+
+    if ($data['username'] != 'zttp') {
+        return response(null, 401);
+    }
+
+    $a = md5('zttp:' . $realm . ':secret');
+    $b = md5(app('request')->server->get('REQUEST_METHOD') . ':' . $data['uri']);
+    $validResponse = md5($a . ':' . $data['nonce'] . ':' . $data['nc'] . ':'.$data['cnonce'] . ':' . $data['qop'] . ':' . $b);
+
+    if ($data['response'] != $validResponse) {
+        return response(null, 401);
+    }
+
+    return response(200);
+});
+
 $app->post('/multi-part', function () {
     return response()->json([
         'body_content' => app('request')->only(['foo', 'baz']),
