@@ -300,7 +300,7 @@ class ZttpResponse
     {
         return $this->body();
     }
-    
+
     function __call($method, $args)
     {
         if (static::hasMacro($method)) {
