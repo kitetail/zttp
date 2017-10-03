@@ -13,6 +13,7 @@ function build_response($request)
         'query' => $request->query(),
         'json' => $request->json()->all(),
         'form_params' => $request->request->all(),
+        'cookies' => $request->cookies->all(),
     ], $request->header('Z-Status', 200));
 }
 
@@ -73,8 +74,10 @@ $app->get('/set-cookie', function() {
    );
 });
 
-$app->get('/echo-cookie', function() {
-    return response(app('request')->cookies->get('foo'), 200);
+$app->get('/set-another-cookie', function() {
+    return response(null, 200)->withCookie(
+        new \Symfony\Component\HttpFoundation\Cookie('baz', 'qux')
+    );
 });
 
 $app->run();
