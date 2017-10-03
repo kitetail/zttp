@@ -464,6 +464,23 @@ class ZttpTest extends TestCase
     }
 
     /** @test */
+    function can_use_digest_auth()
+    {
+        $response = Zttp::withDigestAuth('zttp', 'secret')->get($this->url('/digest-auth'));
+
+        $this->assertTrue($response->isOk());
+    }
+
+    /**
+     * @test
+     * @expectedException \Zttp\ConnectionException
+     */
+    function client_will_force_timeout()
+    {
+        Zttp::timeout(1)->get($this->url('/timeout'));
+    }
+
+    /** @test */
     function cookies_can_be_shared_between_requests()
     {
         $response = Zttp::get($this->url('/set-cookie'));

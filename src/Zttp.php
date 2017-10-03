@@ -114,6 +114,13 @@ class PendingZttpRequest
         });
     }
 
+    function timeout($seconds)
+    {
+        return tap($this, function () use ($seconds) {
+            $this->options['timeout'] = $seconds;
+        });
+    }
+
     function beforeSending($callback)
     {
         return tap($this, function () use ($callback) {
@@ -158,11 +165,15 @@ class PendingZttpRequest
 
     function send($method, $url, $options)
     {
-        return tap(new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions(
-            ['query' => $this->parseQueryParams($url)], $options))),
-            function($response) {
-                $response->cookies = $this->cookies;
-            });
+        try {
+            return tap(new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions(
+                ['query' => $this->parseQueryParams($url)], $options))),
+                function($response) {
+                    $response->cookies = $this->cookies;
+                });
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+            throw new ConnectionException($e->getMessage(), 0, $e);
+        }
     }
 
     function buildClient()
@@ -306,6 +317,11 @@ class ZttpResponse
         return $this->cookies;
     }
 
+    function __toString()
+    {
+        return $this->body();
+    }
+
     function __call($method, $args)
     {
         if (static::hasMacro($method)) {
@@ -315,6 +331,8 @@ class ZttpResponse
         return $this->response->{$method}(...$args);
     }
 }
+
+class ConnectionException extends \Exception {}
 
 function tap($value, $callback) {
     $callback($value);
