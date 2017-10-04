@@ -253,6 +253,11 @@ class ZttpResponse
     {
         return json_decode($this->response->getBody(), true);
     }
+    
+    function xml()
+    {
+        return simplexml_load_string($this->response->getBody());
+    }
 
     function header($header)
     {
