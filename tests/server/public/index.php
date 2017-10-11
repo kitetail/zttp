@@ -106,13 +106,13 @@ $app->router->post('/multi-part', function () {
     ], 200);
 });
 
-$app->get('/set-cookie', function() {
+$app->router->get('/set-cookie', function() {
    return response(null, 200)->withCookie(
        new \Symfony\Component\HttpFoundation\Cookie('foo', 'bar')
    );
 });
 
-$app->get('/set-another-cookie', function() {
+$app->router->get('/set-another-cookie', function() {
     return response(null, 200)->withCookie(
         new \Symfony\Component\HttpFoundation\Cookie('baz', 'qux')
     );
