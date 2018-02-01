@@ -75,6 +75,31 @@ class PendingZttpRequest
     {
         return $this->withHeaders(['Accept' => $header]);
     }
+    
+    public function withParams($params)
+    {
+        return tap($this, function ($request) use ($params) {
+            return $this->options = array_merge_recursive($this->options, [
+                'query' => $params,
+            ]);
+        });
+    }
+
+    public function withBase($baseUri)
+    {
+        return tap($this, function ($request) use ($baseUri) {
+            return $this->options = array_merge_recursive($this->options, [
+                'base_uri' => $baseUri,
+            ]);
+        });
+    }
+    
+    public function withOptions($options)
+    {
+        return tap($this, function ($request) use ($options) {
+            return $this->options = array_merge_recursive($this->options, $options);
+        });
+    }
 
     function withHeaders($headers)
     {
