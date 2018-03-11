@@ -64,9 +64,9 @@ class ZttpTest extends TestCase
     }
 
     /** @test */
-    function configuration_can_be_set_all_at_once()
+    function options_can_be_set_all_at_once()
     {
-        $response = Zttp::configure([
+        $response = Zttp::withOptions([
             'headers' => [
                 'accept' => ['text/xml'],
             ]

@@ -26,7 +26,7 @@ class PendingZttpRequest
         return new self(...$args);
     }
 
-    function configure($options)
+    function withOptions($options)
     {
         return tap($this, function ($request) use ($options) {
             return $this->options = array_merge_recursive($this->options, $options);
