@@ -26,6 +26,13 @@ class PendingZttpRequest
         return new self(...$args);
     }
 
+    function withOptions($options)
+    {
+        return tap($this, function ($request) use ($options) {
+            return $this->options = array_merge_recursive($this->options, $options);
+        });
+    }
+
     function withoutRedirecting()
     {
         return tap($this, function ($request) {
@@ -174,6 +181,7 @@ class PendingZttpRequest
             $stack->push($this->buildBeforeSendingHandler());
         });
     }
+
     function buildBeforeSendingHandler()
     {
         return function ($handler) {

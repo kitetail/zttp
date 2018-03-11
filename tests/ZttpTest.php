@@ -64,6 +64,22 @@ class ZttpTest extends TestCase
     }
 
     /** @test */
+    function options_can_be_set_all_at_once()
+    {
+        $response = Zttp::withOptions([
+            'headers' => [
+                'accept' => ['text/xml'],
+            ]
+        ])->get($this->url('/get'));
+
+        $this->assertArraySubset([
+            'headers' => [
+                'accept' => ['text/xml'],
+            ]
+        ], $response->json());
+    }
+
+    /** @test */
     function post_content_is_json_by_default()
     {
         $response = Zttp::post($this->url('/post'), [
