@@ -434,7 +434,7 @@ class ZttpTest extends TestCase
     {
         $state = [];
 
-        $response = Zttp::beforeSending(function ($request) use (&$state) {
+        Zttp::beforeSending(function ($request) use (&$state) {
             return tap($request, function ($request) use (&$state) {
                 $state['url'] = $request->url();
                 $state['method'] = $request->method();
