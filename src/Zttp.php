@@ -6,7 +6,7 @@ class Zttp
 {
     static function __callStatic($method, $args)
     {
-        return PendingZttpRequest::new()->{$method}(...$args);
+        return (new PendingZttpRequest)->{$method}(...$args);
     }
 }
 
@@ -19,11 +19,6 @@ class PendingZttpRequest
         $this->options = [
             'http_errors' => false,
         ];
-    }
-
-    static function new(...$args)
-    {
-        return new self(...$args);
     }
 
     function withOptions($options)
