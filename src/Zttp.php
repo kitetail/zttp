@@ -12,13 +12,15 @@ class Zttp
 
 class PendingZttpRequest
 {
+    public $bodyFormat = 'json';
+
+    public $options = [
+        'http_errors' => false,
+    ];
+    
     function __construct()
     {
         $this->beforeSendingCallbacks = collect();
-        $this->bodyFormat = 'json';
-        $this->options = [
-            'http_errors' => false,
-        ];
     }
 
     static function new(...$args)
