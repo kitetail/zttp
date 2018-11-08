@@ -12,6 +12,12 @@ $response = Zttp::withHeaders(['Fancy' => 'Pants'])->post($url, [
     'baz' => 'qux',
 ]);
 
+$response->status();
+// int
+
+$response->isOk();
+// true / false
+
 $response->json();
 // => [
 //  'whatever' => 'was returned',
