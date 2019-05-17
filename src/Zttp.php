@@ -257,9 +257,9 @@ class ZttpResponse
         return (string) $this->response->getBody();
     }
 
-    function json()
+    function json($assoc = true)
     {
-        return json_decode($this->response->getBody(), true);
+        return json_decode($this->response->getBody(), $assoc);
     }
 
     function header($header)
