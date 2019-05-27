@@ -14,9 +14,9 @@ class PendingZttpRequest
 {
     function __construct()
     {
-        $this->beforeSendingCallbacks = collect([ function ($request, $options) {
+        $this->beforeSendingCallbacks = collect(function ($request, $options) {
             $this->cookies = $options['cookies'];
-        }]);
+        });
         $this->bodyFormat = 'json';
         $this->options = [
             'http_errors' => false,
@@ -173,11 +173,11 @@ class PendingZttpRequest
     function send($method, $url, $options)
     {
         try {
-            return tap(new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions(
-                ['query' => $this->parseQueryParams($url)], $options))),
-                function($response) {
-                    $response->cookies = $this->cookies;
-                });
+            return tap(new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions([
+                'query' => $this->parseQueryParams($url)
+            ], $options))), function($response) {
+                $response->cookies = $this->cookies;
+            });
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
             throw new ConnectionException($e->getMessage(), 0, $e);
         }
