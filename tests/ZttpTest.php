@@ -495,6 +495,21 @@ class ZttpTest extends TestCase
     {
         Zttp::timeout(1)->get($this->url('/timeout'));
     }
+
+    /** @test */
+    function cookies_can_be_shared_between_requests()
+    {
+        $response = Zttp::get($this->url('/set-cookie'));
+        $response = Zttp::withCookies($response->cookies())->get($this->url('/get'));
+        $this->assertEquals(['foo' => 'bar'], $response->json()['cookies']);
+
+        $response = Zttp::withCookies($response->cookies())->get($this->url('/set-another-cookie'));
+        $response = Zttp::withCookies($response->cookies())->get($this->url('/get'));
+        $this->assertEquals(['foo' => 'bar', 'baz' => 'qux'], $response->json()['cookies']);
+
+        $response = Zttp::get($this->url('/get'));
+        $this->assertEquals([], $response->json()['cookies']);
+    }
 }
 
 class ZttpServer

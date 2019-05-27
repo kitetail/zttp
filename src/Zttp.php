@@ -14,7 +14,9 @@ class PendingZttpRequest
 {
     function __construct()
     {
-        $this->beforeSendingCallbacks = collect();
+        $this->beforeSendingCallbacks = collect([ function ($request, $options) {
+            $this->cookies = $options['cookies'];
+        }]);
         $this->bodyFormat = 'json';
         $this->options = [
             'http_errors' => false,
@@ -110,6 +112,15 @@ class PendingZttpRequest
         });
     }
 
+    function withCookies($cookies)
+    {
+        return tap($this, function($request) use ($cookies) {
+            return $this->options = array_merge_recursive($this->options, [
+                'cookies' => $cookies,
+            ]);
+        });
+    }
+
     function timeout($seconds)
     {
         return tap($this, function () use ($seconds) {
@@ -162,9 +173,11 @@ class PendingZttpRequest
     function send($method, $url, $options)
     {
         try {
-            return new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions([
-                'query' => $this->parseQueryParams($url),
-            ], $options)));
+            return tap(new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions(
+                ['query' => $this->parseQueryParams($url)], $options))),
+                function($response) {
+                    $response->cookies = $this->cookies;
+                });
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
             throw new ConnectionException($e->getMessage(), 0, $e);
         }
@@ -172,7 +185,10 @@ class PendingZttpRequest
 
     function buildClient()
     {
-        return new \GuzzleHttp\Client(['handler' => $this->buildHandlerStack()]);
+        return new \GuzzleHttp\Client([
+            'handler' => $this->buildHandlerStack(),
+            'cookies' => true,
+        ]);
     }
 
     function buildHandlerStack()
@@ -186,15 +202,15 @@ class PendingZttpRequest
     {
         return function ($handler) {
             return function ($request, $options) use ($handler) {
-                return $handler($this->runBeforeSendingCallbacks($request), $options);
+                return $handler($this->runBeforeSendingCallbacks($request, $options), $options);
             };
         };
     }
 
-    function runBeforeSendingCallbacks($request)
+    function runBeforeSendingCallbacks($request, $options)
     {
-        return tap($request, function ($request) {
-            $this->beforeSendingCallbacks->each->__invoke(new ZttpRequest($request));
+        return tap($request, function ($request) use ($options) {
+            $this->beforeSendingCallbacks->each->__invoke(new ZttpRequest($request), $options);
         });
     }
 
@@ -302,6 +318,11 @@ class ZttpResponse
     function isServerError()
     {
         return $this->status() >= 500;
+    }
+
+    function cookies()
+    {
+        return $this->cookies;
     }
 
     function __toString()
