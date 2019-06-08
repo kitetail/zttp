@@ -13,6 +13,7 @@ function build_response($request)
         'query' => $request->query(),
         'json' => $request->json()->all(),
         'form_params' => $request->request->all(),
+        'cookies' => $request->cookies->all(),
     ], $request->header('Z-Status', 200));
 }
 
@@ -103,6 +104,18 @@ $app->router->post('/multi-part', function () {
         'file_content' => file_get_contents($_FILES['test-file']['tmp_name']),
         'headers' => app('request')->header(),
     ], 200);
+});
+
+$app->router->get('/set-cookie', function() {
+   return response(null, 200)->withCookie(
+       new \Symfony\Component\HttpFoundation\Cookie('foo', 'bar')
+   );
+});
+
+$app->router->get('/set-another-cookie', function() {
+    return response(null, 200)->withCookie(
+        new \Symfony\Component\HttpFoundation\Cookie('baz', 'qux')
+    );
 });
 
 $app->run();
