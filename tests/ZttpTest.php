@@ -492,7 +492,7 @@ class ZttpTest extends TestCase
     {
         $response = Zttp::get($this->url('/redirect'));
 
-        $this->assertEquals($this->url('/redirected'), $response->effectiveURI());
+        $this->assertEquals($this->url('/redirected'), $response->effectiveUri());
     }
 
     /**

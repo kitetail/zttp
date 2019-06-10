@@ -299,7 +299,7 @@ class ZttpResponse
         return $this->response->getStatusCode();
     }
 
-    function effectiveURI()
+    function effectiveUri()
     {
         return $this->transferStats->getEffectiveUri();
     }
