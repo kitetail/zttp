@@ -487,6 +487,14 @@ class ZttpTest extends TestCase
         $this->assertTrue($response->isOk());
     }
 
+    /** @test */
+    function can_retrieve_effective_uri()
+    {
+        $response = Zttp::get($this->url('/redirect'));
+
+        $this->assertEquals($this->url('/redirected'), $response->effectiveUri());
+    }
+
     /**
      * @test
      * @expectedException \Zttp\ConnectionException

@@ -174,9 +174,13 @@ class PendingZttpRequest
     {
         try {
             return tap(new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions([
-                'query' => $this->parseQueryParams($url)
+                'query' => $this->parseQueryParams($url),
+                'on_stats' => function (\GuzzleHttp\TransferStats $stats) {
+                    $this->transferStats = $stats;
+                }
             ], $options))), function($response) {
                 $response->cookies = $this->cookies;
+                $response->transferStats = $this->transferStats;
             });
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
             throw new ConnectionException($e->getMessage(), 0, $e);
@@ -293,6 +297,11 @@ class ZttpResponse
     function status()
     {
         return $this->response->getStatusCode();
+    }
+
+    function effectiveUri()
+    {
+        return $this->transferStats->getEffectiveUri();
     }
 
     function isSuccess()
