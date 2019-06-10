@@ -175,8 +175,8 @@ class PendingZttpRequest
         try {
             return tap(new ZttpResponse($this->buildClient()->request($method, $url, $this->mergeOptions([
                 'query' => $this->parseQueryParams($url),
-                'on_stats' => function (\GuzzleHttp\TransferStats $stats) {
-                    $this->transferStats = $stats;
+                'on_stats' => function ($transferStats) {
+                    $this->transferStats = $transferStats;
                 }
             ], $options))), function($response) {
                 $response->cookies = $this->cookies;
