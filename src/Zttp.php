@@ -4,9 +4,34 @@ namespace Zttp;
 
 class Zttp
 {
+    static $expectations;
+
     static function __callStatic($method, $args)
     {
         return PendingZttpRequest::new()->{$method}(...$args);
+    }
+
+    static function stub($callback)
+    {
+        self::$expectations = collect($callback);
+    }
+
+    static function clearStubs()
+    {
+        self::$expectations = null;
+    }
+
+    static function stubHandler()
+    {
+        return function ($handler) {
+            return function ($request, $options) use ($handler) {
+                return (self::$expectations ?? collect())
+                    ->map
+                    ->__invoke(new ZttpRequest($request), $options)
+                    ->filter()
+                    ->first(null, $handler($request, $options));
+            };
+        };
     }
 }
 
@@ -114,7 +139,7 @@ class PendingZttpRequest
 
     function withCookies($cookies)
     {
-        return tap($this, function($request) use ($cookies) {
+        return tap($this, function ($request) use ($cookies) {
             return $this->options = array_merge_recursive($this->options, [
                 'cookies' => $cookies,
             ]);
@@ -199,6 +224,7 @@ class PendingZttpRequest
     {
         return tap(\GuzzleHttp\HandlerStack::create(), function ($stack) {
             $stack->push($this->buildBeforeSendingHandler());
+            $stack->push(Zttp::stubHandler());
         });
     }
 
@@ -346,6 +372,14 @@ class ZttpResponse
         }
 
         return $this->response->{$method}(...$args);
+    }
+}
+
+class ZttpResponseStub extends ZttpResponse
+{
+    static function create($body = null, $status = 200, $headers = [])
+    {
+        return \GuzzleHttp\Promise\promise_for(new \GuzzleHttp\Psr7\Response($status, $headers, $body));
     }
 }
 
