@@ -1,14 +1,20 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 use Zttp\Zttp;
 use Zttp\ZttpResponse;
-use PHPUnit\Framework\TestCase;
 
 class ZttpTest extends TestCase
 {
     public static function setUpBeforeClass()
     {
         ZttpServer::start();
+    }
+
+    protected function tearDown()
+    {
+        Zttp::clearStubs();
+        parent::tearDown();
     }
 
     function url($url)
@@ -474,9 +480,9 @@ class ZttpTest extends TestCase
     /** @test */
     function can_use_basic_auth()
     {
-       $response = Zttp::withBasicAuth('zttp', 'secret')->get($this->url('/basic-auth'));
+        $response = Zttp::withBasicAuth('zttp', 'secret')->get($this->url('/basic-auth'));
 
-       $this->assertTrue($response->isOk());
+        $this->assertTrue($response->isOk());
     }
 
     /** @test */
@@ -517,6 +523,79 @@ class ZttpTest extends TestCase
 
         $response = Zttp::get($this->url('/get'));
         $this->assertEquals([], $response->json()['cookies']);
+    }
+
+    /** @test */
+    function responses_can_be_stubbed()
+    {
+        Zttp::stub(function ($request, $options) {
+            return \Zttp\ZttpResponseStub::create('stubbed ' . $request->method() . ' response');
+        });
+
+        $this->assertEquals('stubbed GET response', Zttp::get('/foo')->body());
+        $this->assertEquals('stubbed POST response', Zttp::post('/bar')->body());
+        $this->assertEquals('stubbed PUT response', Zttp::put('/baz')->body());
+    }
+
+    /** @test */
+    function responses_can_be_stubbed_and_unstubbed()
+    {
+        Zttp::stub(function ($request, $options) {
+            return \Zttp\ZttpResponseStub::create('stubbed response');
+        });
+
+        $stubbedResponse = Zttp::get($this->url('/get'));
+        $this->assertEquals($stubbedResponse, $stubbedResponse->body());
+
+        Zttp::clearStubs();
+
+        $response = Zttp::get($this->url('/get'));
+        $this->assertNotEquals('stubbed response', $response->body());
+    }
+
+    /** @test */
+    function responses_which_are_not_stubbed_are_sent()
+    {
+        Zttp::stub(function ($request, $options) {
+            if ($request->method() === 'POST') {
+                return \Zttp\ZttpResponseStub::create('stubbed response');
+            }
+        });
+
+        $stubbedResponse = Zttp::post('/stubbed');
+        $this->assertEquals('stubbed response', $stubbedResponse->body());
+
+        $this->assertNotEquals('stubbed response', Zttp::get($this->url('/get'))->body());
+    }
+
+    /** @test */
+    function stub_callback_is_fired_after_other_callbacks()
+    {
+        $fired = false;
+        Zttp::stub(function ($request, $options) use (&$fired) {
+            if ($fired) {
+                return \Zttp\ZttpResponseStub::create('stubbed response');
+            }
+        });
+
+        $response = Zttp::beforeSending(function ($request, $options) use (&$fired) {
+            $fired = true;
+        })->get('/get');
+
+        $this->assertEquals('stubbed response', $response->body());
+    }
+
+    /**
+     * @test
+     * @expectedException \Zttp\ConnectionException
+     */
+    function stub_callback_can_throw_an_exception()
+    {
+        Zttp::stub(function ($request, $options) {
+            throw new \Zttp\ConnectionException();
+        });
+
+        Zttp::get('/oops');
     }
 }
 
