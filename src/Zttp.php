@@ -2,6 +2,32 @@
 
 namespace Zttp;
 
+/**
+ * Class Zttp
+ * @package Zttp
+ *
+ * @method static PendingZttpRequest withOptions($options)
+ * @method static PendingZttpRequest withoutRedirecting()
+ * @method static PendingZttpRequest withoutVerifying()
+ * @method static PendingZttpRequest asJson()
+ * @method static PendingZttpRequest asFormParams()
+ * @method static PendingZttpRequest asMultipart()
+ * @method static PendingZttpRequest bodyFormat($format)
+ * @method static PendingZttpRequest contentType($contentType)
+ * @method static PendingZttpRequest accept($header)
+ * @method static PendingZttpRequest withHeaders($headers)
+ * @method static PendingZttpRequest withBasicAuth($username, $password)
+ * @method static PendingZttpRequest withDigestAuth($username, $password)
+ * @method static PendingZttpRequest withCookies($cookies)
+ * @method static PendingZttpRequest timeout($seconds)
+ * @method static PendingZttpRequest beforeSending($callback)
+ * @method static ZttpResponse get($url, $queryParams = [])
+ * @method static ZttpResponse post($url, $params = [])
+ * @method static ZttpResponse patch($url, $params = [])
+ * @method static ZttpResponse put($url, $params = [])
+ * @method static ZttpResponse delete($url, $params = [])
+ * @method static ZttpResponse send($method, $url, $options)
+ */
 class Zttp
 {
     static function __callStatic($method, $args)
@@ -170,6 +196,16 @@ class PendingZttpRequest
         ]);
     }
 
+    /**
+     * Send ZttpRequest.
+     *
+     * @param $method
+     * @param $url
+     * @param $options
+     *
+     * @return ZttpResponse
+     * @throws ConnectionException
+     */
     function send($method, $url, $options)
     {
         try {
