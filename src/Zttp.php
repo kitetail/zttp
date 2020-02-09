@@ -2,6 +2,34 @@
 
 namespace Zttp;
 
+/**
+ * @method static PendingZttpRequest withOptions($options)
+ * @method static PendingZttpRequest withoutRedirecting()
+ * @method static PendingZttpRequest withoutVerifying()
+ * @method static PendingZttpRequest asJson()
+ * @method static PendingZttpRequest asFormParams()
+ * @method static PendingZttpRequest asMultipart()
+ * @method static PendingZttpRequest bodyFormat($format)
+ * @method static PendingZttpRequest contentType($contentType)
+ * @method static PendingZttpRequest accept($header)
+ * @method static PendingZttpRequest withHeaders($headers)
+ * @method static PendingZttpRequest withBasicAuth($username, $password)
+ * @method static PendingZttpRequest withDigestAuth($username, $password)
+ * @method static PendingZttpRequest timeout($seconds)
+ * @method static PendingZttpRequest beforeSending($callback)
+ * @method static ZttpResponse get($url, $queryParams = [])
+ * @method static ZttpResponse post($url, $queryParams = [])
+ * @method static ZttpResponse patch($url, $queryParams = [])
+ * @method static ZttpResponse put($url, $queryParams = [])
+ * @method static ZttpResponse delete($url, $queryParams = [])
+ * @method static ZttpResponse send($method, $url, $options)
+ * @method static \GuzzleHttp\Client buildClient()
+ * @method static \GuzzleHttp\HandlerStack buildHandlerStack()
+ * @method static \Closure buildBeforeSendingHandler()
+ * @method static mixed runBeforeSendingCallbacks($request)
+ * @method static array mergeOptions(...$options)
+ * @method static array parseQueryParams($url)
+ */
 class Zttp
 {
     static function __callStatic($method, $args)
