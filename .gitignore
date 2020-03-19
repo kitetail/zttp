@@ -1,3 +1,15 @@
+### JetBrains template
+/.idea/
+
+### VisualStudioCode template
+/.vscode/
+
+### NetBeans template
+/nbproject/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
 composer.lock
 vendor
 phpunit.xml
