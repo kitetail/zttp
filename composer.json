@@ -1,5 +1,5 @@
 {
-    "name": "superDuperCyberTechno/zttp",
+    "name": "kitetail/zttp",
     "description": "A developer-experience focused HTTP client, optimized for most common use cases.",
     "keywords": ["http", "guzzle"],
     "license": "MIT",
